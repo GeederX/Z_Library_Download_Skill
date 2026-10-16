@@ -226,13 +226,16 @@ def install_skill(args) -> dict:
         raise BookError("skill_exists", "A zlibrary-download skill already exists at the destination; choose another skills directory. Existing skills are not overwritten.")
     parent.mkdir(parents=True, exist_ok=True)
     resource = files("book_tools").joinpath("skill")
-    # In an editable checkout the bundled resource remains at repository root.
-    checkout = Path(__file__).resolve().parents[2] / "skills" / "zlibrary-download"
-    source = checkout if checkout.is_dir() else resource
+    # A source checkout and an installed Skill share the same self-contained root.
+    checkout = Path(__file__).resolve().parents[2]
+    source = checkout if (checkout / "SKILL.md").is_file() else resource
     staging = Path(tempfile.mkdtemp(prefix=".book-tools-skill-", dir=parent))
     try:
         with as_file(source) as source_path:
-            shutil.copytree(source_path, staging / "zlibrary-download")
+            shutil.copytree(source_path, staging / "zlibrary-download", ignore=shutil.ignore_patterns(
+                ".venv", "__pycache__", "*.py[cod]", "*.egg-info", ".pytest_cache",
+                ".git", "build", "dist", ".env", "credentials.env", "credentials.json", "sessions.json",
+            ))
         # rename does not replace a populated directory, but check again to avoid replacing empty ones.
         if destination.exists() or destination.is_symlink():
             raise BookError("skill_exists", "A skill appeared at the destination during installation.")

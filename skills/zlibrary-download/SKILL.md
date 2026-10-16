@@ -1,6 +1,6 @@
 ---
 name: zlibrary-download
-description: Search for books by title or author and download verified ebook files using the independent book-tools CLI. Use for 找书、下载书籍、英文原版、EPUB、PDF, Z-Library and Anna's Archive. Works with any agent that can run terminal commands; runtime and credentials are not stored in an agent-specific directory.
+description: Search for books by title or author and download verified ebook files using the independent book-tools CLI. Use for 找书、下载书籍、英文原版、EPUB、PDF, Z-Library and Anna's Archive. Includes CLI source and installer; works with any agent that can run terminal commands, with credentials stored outside the Skill.
 ---
 
 # Z-Library download
@@ -13,9 +13,15 @@ Extract title, author if known, language, format and any explicit edition constr
 
 Discover the runtime once per environment with `book-tools --version`, then `book-tools doctor`; reuse successful discovery in the current session. Diagnostics are local unless the user explicitly requests `doctor --online`. Do not assume the Skill directory, current working directory, or an agent-provided `SKILL_PATH` variable locates the Python environment.
 
-If `book-tools` is not on PATH, use the absolute command path reported by its installer. For a project installation it is `<project>/.venv/bin/book-tools` on POSIX or `<project>/.venv/Scripts/book-tools.exe` on Windows. If no runtime exists, follow the [repository installation instructions](https://github.com/GeederX/Z_Library_Download_Skill#install-as-a-skill); installing this Skill alone does not install the CLI. Never install into system Python, download executable helper binaries, or silently replace another installed skill.
+If `book-tools` is not on PATH, use the absolute command path reported by a previous installer if available. If no runtime exists, bootstrap it from **this installed Skill**, without cloning an outer repository:
 
-Browser support is optional. `book-tools browser status` reports local package/Chromium availability without visiting the site. If missing, use the project's installer with `--browser`; `book-tools browser install` explicitly installs Chromium when Playwright is already present. Do not silently install a browser during search.
+1. Resolve the absolute directory containing the actual loaded `SKILL.md` using the host's Skill location information. That directory also contains `scripts/install.py`, `src/book_tools/`, `pyproject.toml`, dependency locks and `LICENSE`. Do not infer it from the current working directory, `SKILL_PATH` or a Claude-specific directory.
+2. Select an available Python 3.11+ interpreter (Python 3.13 with modern OpenSSL is recommended) and explicitly run `python3.13 "/absolute/path/to/this/skill/scripts/install.py" --scope global`, replacing the example path with the resolved absolute path and using the selected interpreter. Installing the Skill files alone does not execute this command or install dependencies.
+3. Read the installer's reported executable path, run that absolute executable with `--version` and then `doctor`, and use it for subsequent commands if PATH does not expose `book-tools`. The global runtime is in the OS user-data directory, not the Skill directory; account configuration and browser Profiles are preserved on upgrade.
+
+For an explicitly requested project-local runtime, use the same bundled installer with `--scope project`; it creates `<absolute Skill directory>/.venv/bin/book-tools` on POSIX or `<absolute Skill directory>/.venv/Scripts/book-tools.exe` on Windows, independently of the working directory. Never install into system Python, use sudo, download executable helper binaries, or silently replace another installed skill.
+
+Browser support is optional. `book-tools browser status` reports local package/Chromium availability without visiting the site. If needed and missing, explicitly invoke the same absolute bundled installer with `--scope global --browser` (or the selected project scope); `book-tools browser install` explicitly installs Chromium when Playwright is already present. Do not silently install a browser during search.
 
 Read [the CLI reference](references/cli.md) only when installation, configuration, transport details or troubleshooting requires it; do not load the full reference for every book request.
 
