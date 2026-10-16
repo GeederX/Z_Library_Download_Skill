@@ -221,22 +221,22 @@ def install_skill(args) -> dict:
         parent = Path(args.directory).expanduser().resolve()
     else:
         parent = (Path.home() if args.scope == "global" else Path.cwd()) / ".agents" / "skills"
-    destination = parent / "zlib-download"
+    destination = parent / "zlibrary-download"
     if destination.exists() or destination.is_symlink():
-        raise BookError("skill_exists", "A zlib-download skill already exists at the destination; choose another skills directory. Existing skills are not overwritten.")
+        raise BookError("skill_exists", "A zlibrary-download skill already exists at the destination; choose another skills directory. Existing skills are not overwritten.")
     parent.mkdir(parents=True, exist_ok=True)
     resource = files("book_tools").joinpath("skill")
     # In an editable checkout the bundled resource remains at repository root.
-    checkout = Path(__file__).resolve().parents[2] / "skills" / "zlib-download"
+    checkout = Path(__file__).resolve().parents[2] / "skills" / "zlibrary-download"
     source = checkout if checkout.is_dir() else resource
     staging = Path(tempfile.mkdtemp(prefix=".book-tools-skill-", dir=parent))
     try:
         with as_file(source) as source_path:
-            shutil.copytree(source_path, staging / "zlib-download")
+            shutil.copytree(source_path, staging / "zlibrary-download")
         # rename does not replace a populated directory, but check again to avoid replacing empty ones.
         if destination.exists() or destination.is_symlink():
             raise BookError("skill_exists", "A skill appeared at the destination during installation.")
-        (staging / "zlib-download").rename(destination)
+        (staging / "zlibrary-download").rename(destination)
     finally:
         shutil.rmtree(staging, ignore_errors=True)
     return {"path": str(destination), "runtime": "book-tools", "note": "Reload your agent if required. Agent discovery rules vary; --directory selects an agent-specific skills directory."}

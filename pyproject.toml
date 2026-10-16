@@ -20,6 +20,11 @@ dependencies = [
 [project.optional-dependencies]
 browser = ["playwright>=1.55,<2"]
 
+[project.urls]
+Homepage = "https://github.com/GeederX/Z_Library_Download_Skill"
+Repository = "https://github.com/GeederX/Z_Library_Download_Skill"
+Issues = "https://github.com/GeederX/Z_Library_Download_Skill/issues"
+
 [project.scripts]
 book-tools = "book_tools.cli:main"
 
@@ -30,7 +35,7 @@ dev = ["pytest>=8,<9"]
 packages = ["src/book_tools"]
 
 [tool.hatch.build.targets.wheel.force-include]
-"skills/zlib-download" = "book_tools/skill"
+"skills/zlibrary-download" = "book_tools/skill"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

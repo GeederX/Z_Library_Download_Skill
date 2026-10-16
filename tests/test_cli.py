@@ -31,7 +31,7 @@ def test_unconfigured_zlib_has_actionable_error_not_traceback(tmp_path):
 
 def test_skill_install_preserves_existing_skill(tmp_path):
     skills = tmp_path / "skills"
-    destination = skills / "zlib-download"
+    destination = skills / "zlibrary-download"
     destination.mkdir(parents=True)
     marker = destination / "SKILL.md"
     marker.write_text("existing user skill")
